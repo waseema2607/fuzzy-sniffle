@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -10,9 +11,12 @@ import data from './ShipmentData'
 import ButtonAppBar from './ButtonAppBar';
 import { Button } from '@mui/base';
 import EditableCell from './EditableCell';
+import Box from '@mui/material/Box';
+import { TextField } from '@mui/material';
 
 export default function Inventory() {
     const [rows, setRows] = React.useState(data)
+    const [text, setText] = React.useState('');
 
     const handleAdd = (i) => {
         const arr = [...rows]
@@ -25,9 +29,40 @@ export default function Inventory() {
         updatedRows[rowIndex][columnId] = value;
         setRows(updatedRows);
     };
+
+    const handleChangeText = (e) => {
+        setText(e.target.value)
+        console.log("event", e.target.value)
+      }
+    
+      useEffect(() => {
+        if (text.length > 2) {
+            const results = data?.filter((item) => 
+            item.status.includes(text));
+          setRows(results);
+        }
+        else {
+            setRows(data)
+          }
+      }, [text]);
     return (
         <>
             <ButtonAppBar title={"Shipment Details"} />
+
+            <br />
+            <Box
+                sx={{
+                    paddingLeft: 5,
+                    width: 500,
+                    maxWidth: '60%',
+                }}
+            >
+                <TextField fullWidth label="Search Here" id="fullWidth"
+                    onChange={(e) => handleChangeText(e)}
+                    value={text}
+                />
+            </Box>
+            <br />
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -56,7 +91,7 @@ export default function Inventory() {
                                     rowIndex={rowIndex}
                                     columnId="status"
                                     onSave={handleSave}
-            
+
                                 />
                                 <TableCell align="right">{row.estimatedDelivery}</TableCell>
 

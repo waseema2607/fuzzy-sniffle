@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,8 +12,7 @@ import ButtonAppBar from './ButtonAppBar';
 import { Button } from '@mui/base';
 import EditableCell from './EditableCell';
 import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
-
+import TextField from '@mui/material/TextField';
 
 export default function Supplier() {
   const [rows,setRows] = React.useState(data)
@@ -20,6 +20,7 @@ export default function Supplier() {
   const [formData,setFormData] = React.useState({
     id : '' ,name : "", contactPerson:"",phone : '' ,email : ""
   })
+  const [text, setText] = React.useState('');
   
   const handleChange = (event) =>{
     const {name,value} = event.target
@@ -44,10 +45,40 @@ export default function Supplier() {
     updatedRows[rowIndex][columnId] = value;
     setRows(updatedRows);
 };
+
+const handleChangeText = (e) => {
+  setText(e.target.value)
+  console.log("event", e.target.value)
+}
+
+useEffect(() => {
+  if (text.length > 2) {
+      const results = data?.filter((item) => 
+      item.contactPerson.includes(text));
+    setRows(results);
+  }
+  else {
+    setRows(data)
+  }
+}, [text]);
   
   return (
      <>
      <ButtonAppBar title = {"Supplier Details"}/>
+     <br />
+            <Box
+                sx={{
+                    paddingLeft: 5,
+                    width: 500,
+                    maxWidth: '60%',
+                }}
+            >
+                <TextField fullWidth label="Search Here" id="fullWidth"
+                    onChange={(e) => handleChangeText(e)}
+                    value={text}
+                />
+            </Box>
+            <br />
      <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
